@@ -20,6 +20,10 @@ import java.util.logging.Logger;
 
 public final class RealtimeClient {
 
+    private static final String PLUGIN_NAME = "StellarQuickLogin";
+    private static final String PLATFORM_NAME = "paper";
+    private static final String PLUGIN_VERSION = "1.0.0";
+
     private final Logger logger;
     private final URI websocketUri;
     private final String pluginToken;
@@ -97,9 +101,14 @@ public final class RealtimeClient {
 
         cancelReconnect();
         state = ConnectionState.CONNECTING;
-        httpClient.newWebSocketBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .buildAsync(websocketUri, new Listener())
+        WebSocket.Builder builder = httpClient.newWebSocketBuilder()
+            .connectTimeout(Duration.ofSeconds(10));
+
+        if (pluginToken != null && !pluginToken.isBlank()) {
+            builder.header("Authorization", "Bearer " + pluginToken);
+        }
+
+        builder.buildAsync(websocketUri, new Listener())
             .whenComplete((socket, throwable) -> {
                 if (throwable != null) {
                     handleDisconnect("Failed to connect to StellarRealtime: " + throwable.getClass().getSimpleName());
@@ -139,10 +148,17 @@ public final class RealtimeClient {
     private void sendAuthFrame() {
         JsonObject authFrame = new JsonObject();
         authFrame.addProperty("type", "auth");
+
+        JsonObject data = new JsonObject();
+        data.addProperty("serverId", serverId);
+        data.addProperty("serverName", PLUGIN_NAME);
+        data.addProperty("platform", PLATFORM_NAME);
+        data.addProperty("version", PLUGIN_VERSION);
+        authFrame.add("data", data);
+
         authFrame.addProperty("role", "plugin");
-        authFrame.addProperty("token", pluginToken);
         authFrame.addProperty("serverId", serverId);
-        authFrame.addProperty("plugin", "StellarQuickLogin");
+        authFrame.addProperty("plugin", PLUGIN_NAME);
         sendJson(authFrame);
     }
 
@@ -232,6 +248,7 @@ public final class RealtimeClient {
 
         @Override
         public void onOpen(WebSocket webSocket) {
+            RealtimeClient.this.webSocket = webSocket;
             webSocket.request(1);
             RealtimeClient.this.onOpen();
         }
