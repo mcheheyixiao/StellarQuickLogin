@@ -1,6 +1,16 @@
 name: StellarQuickLogin
-version: '1.0.0'
-main: org.stellarvan.stellarQuickLogin.StellarQuickLogin
-api-version: '1.21'
-authors: [ StellarVan ]
-website: www.stellarvan.cn
+version: '${version}'
+main: cn.stellarworld.quicklogin.StellarQuickLoginPlugin
+api-version: '1.20'
+softdepend:
+  - AuthMe
+commands:
+  stellarquicklogin:
+    description: Manage StellarQuickLogin
+    usage: "/<command> <status|reload>"
+    aliases: [sqlogin]
+    permission: stellarquicklogin.admin
+permissions:
+  stellarquicklogin.admin:
+    description: Manage StellarQuickLogin
+    default: op

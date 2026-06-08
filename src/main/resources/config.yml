@@ -1,0 +1,30 @@
+server-id: "survival-1"
+
+authme:
+  enabled: true
+  join-delay-ticks: 20
+  require-registered: true
+
+website:
+  enabled-direct-check: false
+  consume-url: "https://www.example.com/internal/quick-login/consume"
+  internal-token: "CHANGE_ME"
+  timeout-ms: 3000
+
+realtime:
+  enabled: true
+  websocket-url: "ws://127.0.0.1:3001/ws/plugin"
+  plugin-token: "CHANGE_ME"
+  reconnect-delay-seconds: 5
+  heartbeat-seconds: 30
+
+security:
+  ticket-ttl-seconds: 300
+  require-player-match: true
+  clear-ticket-after-attempt: true
+  log-sensitive-values: false
+
+messages:
+  success: "§a已通过 StellarWorld 网站免密登录。"
+  expired: "§c免密登录已过期，请重新在网站开启。"
+  failed: "§c免密登录失败，请使用 /login 密码登录。"
