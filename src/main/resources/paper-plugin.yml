@@ -1,0 +1,6 @@
+name: StellarQuickLogin
+version: '1.0.0'
+main: org.stellarvan.stellarQuickLogin.StellarQuickLogin
+api-version: '1.21'
+authors: [ StellarVan ]
+website: www.stellarvan.cn
