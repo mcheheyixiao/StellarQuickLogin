@@ -147,8 +147,16 @@ public final class RealtimeMessageParser {
         if (rawUuid == null || rawUuid.isBlank()) {
             return null;
         }
+        String normalizedUuid = rawUuid;
+        if (rawUuid.matches("^[0-9a-fA-F]{32}$")) {
+            normalizedUuid = rawUuid.substring(0, 8)
+                + "-" + rawUuid.substring(8, 12)
+                + "-" + rawUuid.substring(12, 16)
+                + "-" + rawUuid.substring(16, 20)
+                + "-" + rawUuid.substring(20);
+        }
         try {
-            return UUID.fromString(rawUuid);
+            return UUID.fromString(normalizedUuid);
         } catch (IllegalArgumentException exception) {
             return null;
         }

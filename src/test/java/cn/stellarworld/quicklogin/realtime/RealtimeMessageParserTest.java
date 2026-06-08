@@ -4,6 +4,7 @@ import cn.stellarworld.quicklogin.ticket.QuickLoginTicket;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,5 +70,35 @@ class RealtimeMessageParserTest {
 
         assertTrue(parsed.isPresent());
         assertEquals(ParseStatus.SERVER_MISMATCH, parsed.get().status());
+    }
+
+    @Test
+    void parseAcceptsUndashedUuidFromRealtimeBridge() {
+        AtomicLong now = new AtomicLong(1_000L);
+        String rawMessage = """
+            {
+              "type": "quicklogin.preauthorize",
+              "requestId": "req-quicklogin-undashed",
+              "serverId": "survival-1",
+              "payload": {
+                "playerName": "Alice",
+                "playerUuid": "123e4567e89b12d3a456426614174000",
+                "websiteUserId": 12,
+                "token": "ticket-123456789012345678901234567890",
+                "ttlSeconds": 60
+              }
+            }
+            """;
+
+        Optional<ParsedPreauthorizeMessage> parsed = RealtimeMessageParser.parse(
+            rawMessage,
+            "survival-1",
+            300_000L,
+            () -> now.get()
+        );
+
+        assertTrue(parsed.isPresent());
+        assertEquals(ParseStatus.OK, parsed.get().status());
+        assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), parsed.get().ticket().playerUuid());
     }
 }
