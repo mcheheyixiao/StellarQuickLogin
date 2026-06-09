@@ -2,8 +2,7 @@ name: StellarQuickLogin
 version: '${version}'
 main: cn.stellarworld.quicklogin.StellarQuickLoginPlugin
 api-version: '1.20'
-softdepend:
-  - AuthMe
+softdepend: [AuthMe]
 commands:
   stellarquicklogin:
     description: Manage StellarQuickLogin
