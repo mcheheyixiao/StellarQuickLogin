@@ -23,7 +23,7 @@ public record StellarQuickLoginConfig(
                 config.getBoolean("authme.require-registered", true)
             ),
             new WebsiteSettings(
-                config.getBoolean("website.enabled-direct-check", false),
+                config.getBoolean("website.enabled-direct-check", true),
                 config.getString("website.consume-url", "https://www.example.com/internal/quick-login/consume"),
                 config.getString("website.internal-token", "CHANGE_ME"),
                 Math.max(500, config.getInt("website.timeout-ms", 3_000))

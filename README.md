@@ -32,7 +32,13 @@ StellarQuickLogin 是一个最小可用的 Paper 插件，用于把 StellarWorld
 
 ### `website`
 
-- `enabled-direct-check`: 没有收到 Realtime 预授权时，是否在玩家进服后直接请求 consume API 检查 pending ticket。默认 `false`。
+Quick notes for the current website contract:
+
+- `enabled-direct-check` should stay enabled if you want re-login during the 5-minute quick-login window after the one-time ticket has already been cleared locally.
+- Default `enabled-direct-check` is `true`.
+- The plugin now forwards the player's real connection IP as `clientIp` when it can read `player.getAddress()`.
+
+- `enabled-direct-check`: 没有收到 Realtime 预授权时，是否在玩家进服后直接请求 consume API 检查 pending ticket、active window 或 trusted IP。默认 `true`。
 - `consume-url`: StellarWorld 内部 consume 接口地址。
 - `internal-token`: StellarWorld 内部 Bearer token。保留 `CHANGE_ME` 时插件会禁用 quick login 功能。
 - `timeout-ms`: consume API 超时时间。
@@ -92,7 +98,8 @@ StellarQuickLogin 是一个最小可用的 Paper 插件，用于把 StellarWorld
   "token": "ticket-from-website",
   "playerName": "Alice",
   "playerUuid": "123e4567-e89b-12d3-a456-426614174000",
-  "serverId": "survival-1"
+  "serverId": "survival-1",
+  "clientIp": "203.0.113.42"
 }
 ```
 
@@ -100,6 +107,8 @@ HTTP Header:
 
 - `Authorization: Bearer <website.internal-token>`
 - `Content-Type: application/json`
+
+When `website.enabled-direct-check` is enabled and no local Realtime ticket exists, the plugin sends the same JSON shape without the `token` field and still includes `clientIp` when available. The website can then authorize from a pending ticket, an active 5-minute login window, or a trusted IP record.
 
 如果启用了 `website.enabled-direct-check`，并且本地没有收到 Realtime 票据，插件会发送不带 `token` 字段的同类请求，让网站自行按玩家身份决定是否存在 pending ticket。
 

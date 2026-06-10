@@ -33,6 +33,9 @@ public final class WebsiteClient {
         requestBody.addProperty("playerName", request.playerName());
         requestBody.addProperty("playerUuid", request.playerUuid());
         requestBody.addProperty("serverId", request.serverId());
+        if (request.clientIp() != null && !request.clientIp().isBlank()) {
+            requestBody.addProperty("clientIp", request.clientIp());
+        }
 
         HttpRequest httpRequest = HttpRequest.newBuilder(consumeUri)
             .timeout(timeout)

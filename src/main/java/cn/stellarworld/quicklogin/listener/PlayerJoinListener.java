@@ -11,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.logging.Level;
+
 public final class PlayerJoinListener implements Listener {
 
     private final StellarQuickLoginPlugin plugin;
@@ -59,11 +61,17 @@ public final class PlayerJoinListener implements Listener {
             return;
         }
 
+        String clientIp = null;
+        if (player.getAddress() != null && player.getAddress().getAddress() != null) {
+            clientIp = player.getAddress().getAddress().getHostAddress();
+        }
+
         ConsumeRequest request = new ConsumeRequest(
             ticket == null ? null : ticket.token(),
             player.getName(),
             player.getUniqueId().toString(),
-            config.serverId()
+            config.serverId(),
+            clientIp
         );
 
         plugin.getWebsiteClient().consume(request).whenComplete((response, throwable) ->
@@ -91,11 +99,27 @@ public final class PlayerJoinListener implements Listener {
             return;
         }
 
+        logAcceptedIfDebugEnabled(player, response);
+
         if (plugin.getAuthMeHook().isAuthenticated(player)) {
             return;
         }
 
         boolean forced = plugin.getAuthMeHook().forceLogin(player, config.authMe().requireRegistered());
         player.sendMessage(forced ? config.messages().success() : config.messages().failed());
+    }
+
+    private void logAcceptedIfDebugEnabled(Player player, ConsumeResponse response) {
+        if (response.status() == null || response.status().isBlank()) {
+            return;
+        }
+
+        try {
+            if (plugin.getLogger().isLoggable(Level.FINE)) {
+                plugin.getLogger().fine("Quick login accepted for player " + player.getName() + ", source=" + response.status());
+            }
+        } catch (RuntimeException ignored) {
+            // Debug logging must never block the quick-login flow.
+        }
     }
 }

@@ -4,6 +4,7 @@ public record ConsumeRequest(
     String token,
     String playerName,
     String playerUuid,
-    String serverId
+    String serverId,
+    String clientIp
 ) {
 }

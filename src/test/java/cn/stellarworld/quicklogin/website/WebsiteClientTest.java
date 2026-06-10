@@ -47,7 +47,7 @@ class WebsiteClientTest {
             Duration.ofSeconds(3)
         );
 
-        ConsumeResponse response = client.consume(new ConsumeRequest("ticket-123", "Alice", "uuid-1", "survival-1")).join();
+        ConsumeResponse response = client.consume(new ConsumeRequest("ticket-123", "Alice", "uuid-1", "survival-1", "203.0.113.40")).join();
 
         assertTrue(response.ok());
         assertEquals("consumed", response.status());
@@ -55,6 +55,7 @@ class WebsiteClientTest {
         assertEquals("Bearer internal-secret", authHeader.get());
         assertTrue(body.get().contains("\"token\":\"ticket-123\""));
         assertTrue(body.get().contains("\"playerName\":\"Alice\""));
+        assertTrue(body.get().contains("\"clientIp\":\"203.0.113.40\""));
     }
 
     @Test
@@ -72,11 +73,12 @@ class WebsiteClientTest {
             Duration.ofSeconds(3)
         );
 
-        ConsumeResponse response = client.consume(new ConsumeRequest(null, "Alice", "uuid-1", "survival-1")).join();
+        ConsumeResponse response = client.consume(new ConsumeRequest(null, "Alice", "uuid-1", "survival-1", null)).join();
 
         assertFalse(response.ok());
         assertEquals("unauthorized", response.status());
         assertFalse(body.get().contains("\"token\""));
+        assertFalse(body.get().contains("\"clientIp\""));
     }
 
     private void startServer(HttpHandler handler) throws IOException {

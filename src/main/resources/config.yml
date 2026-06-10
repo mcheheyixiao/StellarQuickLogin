@@ -6,7 +6,9 @@ authme:
   require-registered: true
 
 website:
-  enabled-direct-check: false
+  # When true, if no local websocket ticket is cached, still ask the website
+  # whether a 5-minute quick-login window or trusted IP is active.
+  enabled-direct-check: true
   consume-url: "https://www.example.com/internal/quick-login/consume"
   internal-token: "CHANGE_ME"
   timeout-ms: 3000
